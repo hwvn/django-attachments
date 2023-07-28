@@ -21,9 +21,9 @@ def attachment_upload(instance, filename):
 
 
 class AttachmentManager(models.Manager):
-    def attachments_for_object(self, obj):
+    def attachments_for_object(self, obj, category=None):
         object_type = ContentType.objects.get_for_model(obj)
-        return self.filter(content_type__pk=object_type.id, object_id=obj.pk)
+        return self.filter(content_type__pk=object_type.id, object_id=obj.pk, category=category)
 
 
 @python_2_unicode_compatible
@@ -44,6 +44,7 @@ class Attachment(models.Model):
     )
     created = models.DateTimeField(_("created"), auto_now_add=True, db_index=True)
     modified = models.DateTimeField(_("modified"), auto_now=True, db_index=True)
+    category = models.CharField(null=True, blank=True, max_length=30)
 
     class Meta:
         verbose_name = _("attachment")

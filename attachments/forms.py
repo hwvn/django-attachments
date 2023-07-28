@@ -34,10 +34,11 @@ class AttachmentForm(forms.ModelForm):
         label=_("Upload attachment"),
         validators=[validate_max_size, custom_attachment_validators]
     )
+    category = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = Attachment
-        fields = ("attachment_file",)
+        fields = ("attachment_file", 'category')
 
     def save(self, request, obj, *args, **kwargs):
         self.instance.creator = request.user

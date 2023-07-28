@@ -9,7 +9,7 @@ register = Library()
 
 
 @register.inclusion_tag("attachments/add_form.html", takes_context=True)
-def attachment_form(context, obj, **kwargs):
+def attachment_form(context, obj, category=None, **kwargs):
     """
     Renders a "upload attachment" form.
 
@@ -18,7 +18,7 @@ def attachment_form(context, obj, **kwargs):
     """
     if context["user"].has_perm("attachments.add_attachment"):
         return {
-            "form": AttachmentForm(),
+            "form": AttachmentForm(initial={'category': category}),
             "form_url": add_url_for_obj(obj),
             "next": kwargs.get("next", context.request.build_absolute_uri()),
         }
@@ -51,17 +51,17 @@ def attachment_delete_link(context, attachment, **kwargs):
 
 
 @register.simple_tag
-def attachments_count(obj):
+def attachments_count(obj, category=None):
     """
     Counts attachments that are attached to a given object::
 
-        {% attachments_count obj %}
+        {% attachments_count obj category %}
     """
     return Attachment.objects.attachments_for_object(obj).count()
 
 
 @register.simple_tag
-def get_attachments_for(obj, *args, **kwargs):
+def get_attachments_for(obj, category=None, *args, **kwargs):
     """
     Resolves attachments that are attached to a given object. You can specify
     the variable name in the context the attachments are stored using the `as`
@@ -69,6 +69,6 @@ def get_attachments_for(obj, *args, **kwargs):
 
     Syntax::
 
-        {% get_attachments_for obj as "my_attachments" %}
+        {% get_attachments_for obj category as "my_attachments" %}
     """
-    return Attachment.objects.attachments_for_object(obj)
+    return Attachment.objects.attachments_for_object(obj, category=category)
